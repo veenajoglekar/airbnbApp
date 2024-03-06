@@ -30,13 +30,26 @@ app.get("/test", (req, res) => {
 app.post("/register", async(req, res) => {
   const { name, email, password } = req.body;
   // res.json({ name, email, password });
-  const userDoc = await User.create({
-    name,
-    email,
-    password: bcrypt.hashSync(password, bcryptSalt)
-  })
+  try{
+    const userDoc = await User.create({
+      name,
+      email,
+      password: bcrypt.hashSync(password, bcryptSalt)
+    })
+    res.json(userDoc);
 
-  res.json(userDoc);
-
+  }catch(e) {
+    res.status(422).json(e);
+  }
 });
+
+app.post('/login', async(req,res) => {
+  const {email,password} = req.body;
+  const UserDoc = await User.findOne({email});
+  if(UserDoc) {
+    res.json('found');
+  }else{
+    res.json('not found')
+  }
+})
 app.listen(4000);
